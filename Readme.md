@@ -68,6 +68,15 @@
 
 # Ход выполнения домашнего задания
 
+### Каждое домашнее задание лежит в отдельной ветке `homework-xxx`
+
+| ПД-412                                                 | П-318                                                 | П-319                                                 |
+| ------------------------------------------------------ | ----------------------------------------------------- | ----------------------------------------------------- |
+| https://github.com/TOP-PD-412/Homework/tree/homework-1 | https://github.com/TOP-P-318/Homework/tree/homework-1 | https://github.com/TOP-P-319/Homework/tree/homework-1 |
+| https://github.com/TOP-PD-412/Homework/tree/homework-2 | https://github.com/TOP-P-318/Homework/tree/homework-2 | https://github.com/TOP-P-319/Homework/tree/homework-2 |
+| https://github.com/TOP-PD-412/Homework/tree/homework-3 | https://github.com/TOP-P-318/Homework/tree/homework-3 | https://github.com/TOP-P-319/Homework/tree/homework-3 |
+| https://github.com/TOP-PD-412/Homework/tree/homework-4 | https://github.com/TOP-P-318/Homework/tree/homework-4 | https://github.com/TOP-P-319/Homework/tree/homework-4 |
+
 ## Начало работы
 
 1. Создаем новую ветку с номером домашнего задания.
