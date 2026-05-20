@@ -1,33 +1,57 @@
-- name: Sync README.md to other branches
-  run: |
-    git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+name: Sync README from master to all branches
 
-    BRANCHES=$(git branch -r \
-      | grep -v 'origin/master' \
-      | grep -v 'origin/HEAD' \
-      | sed 's|origin/||' \
-      | xargs)
+on:
+  push:
+    branches:
+      - master
 
-    for branch in $BRANCHES; do
-      echo "Processing branch: $branch"
+jobs:
+  sync-branches:
+    runs-on: ubuntu-latest
 
-      git switch -C "$branch" "origin/$branch"
+    permissions:
+      contents: write
 
-      # Если в ветке есть старый Readme.md — удаляем/переименовываем
-      if [ -f "Readme.md" ] && [ ! -f "README.md" ]; then
-        git mv Readme.md README.md
-      elif [ -f "Readme.md" ] && [ -f "README.md" ]; then
-        git rm Readme.md
-      fi
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Берём актуальный README.md из master
-      git checkout origin/master -- README.md
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      if git diff --cached --quiet; then
-        echo "No changes for $branch"
-      else
-        git commit -m "chore: rename and sync README.md from master [skip ci]"
-        git push origin HEAD:"$branch"
-        echo "Successfully updated $branch"
-      fi
-    done
+      - name: Sync README.md to other branches
+        run: |
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+
+          BRANCHES=$(git branch -r \
+            | grep -v 'origin/master' \
+            | grep -v 'origin/HEAD' \
+            | sed 's|origin/||' \
+            | xargs)
+
+          for branch in $BRANCHES; do
+            echo "Processing branch: $branch"
+
+            git switch -C "$branch" "origin/$branch"
+
+            if [ -f "Readme.md" ] && [ ! -f "README.md" ]; then
+              git mv Readme.md README.md
+            elif [ -f "Readme.md" ] && [ -f "README.md" ]; then
+              git rm Readme.md
+            fi
+
+            git checkout origin/master -- README.md
+
+            if git diff --cached --quiet; then
+              echo "No changes for $branch"
+            else
+              git commit -m "chore: sync README.md from master [skip ci]"
+              git push origin HEAD:"$branch"
+              echo "Successfully updated $branch"
+            fi
+          done
