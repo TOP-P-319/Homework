@@ -1,0 +1,44 @@
+name: Sync README from master to all branches
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  sync-branches:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@://github.com"
+
+      - name: Sync README.md to other branches
+        run: |
+          BRANCHES=$(git branch -r | grep -v 'origin/master' | grep -v 'origin/HEAD' | sed 's/origin\///')
+          
+          for branch in $BRANCHES; do
+            echo "Processing branch: $branch"
+            
+            git checkout $branch
+            
+            git checkout origin/master -- README.md
+            
+            if git diff --quiet README.md; then
+              echo "README in $branch is already up to date."
+            else
+              git add README.md
+              git commit -m "chore: sync README.md from master [skip ci]"
+              git push origin $branch
+              echo "Successfully updated README in $branch"
+            fi
+          done
